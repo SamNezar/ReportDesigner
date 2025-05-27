@@ -1,0 +1,86 @@
+/* Toolbar Styles */
+.toolbar {
+    background: #e8e8e8;
+    border-bottom: 1px solid #ccc;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    min-height: 40px;
+}
+
+.toolbar select, 
+.toolbar input, 
+.toolbar button {
+    padding: 4px 8px;
+    border: 1px solid #999;
+    border-radius: 3px;
+    font-size: 12px;
+    height: 24px;
+}
+
+.toolbar button {
+    background: #f5f5f5;
+    cursor: pointer;
+    font-weight: bold;
+    min-width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar button:hover {
+    background: #ddd;
+}
+
+.toolbar button.active {
+    background: #007acc;
+    color: white;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: #ccc;
+    margin: 0 5px;
+}
+
+.color-input {
+    width: 30px;
+    height: 24px;
+    border: 1px solid #999;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 0;
+}
+
+.toolbar select {
+    min-width: 80px;
+}
+
+.toolbar input[type="number"] {
+    width: 60px;
+}
+
+/* Border Set Buttons */
+.border-set-group {
+    display: flex;
+    gap: 2px;
+}
+
+.border-set-group button {
+    min-width: 20px;
+    font-size: 10px;
+    padding: 2px;
+}
+
+/* Alignment Buttons */
+.alignment-group {
+    display: flex;
+    gap: 2px;
+}
+
+.alignment-group button {
+    min-width: 24px;
+}
