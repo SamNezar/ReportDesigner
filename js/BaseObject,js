@@ -1,0 +1,149 @@
+// Base class for all report objects
+class BaseObject {
+    constructor(objectType, x = 0, y = 0) {
+        // Basic identification
+        this.object_id = this.generateId();
+        this.object_type_id = objectType;
+        
+        // Position and size
+        this.x = x;
+        this.y = y;
+        this.width = 100;
+        this.height = 50;
+        this.rotation = 0;
+        
+        // Border properties (applies to whole object)
+        this.border = {
+            style: 'solid', // solid, dashed, dotted, double, none
+            size: 1,
+            color: '#000000',
+            set: 'all' // all, none, top, bottom, left, right
+        };
+        
+        // Selection and interaction
+        this.selected = false;
+        this.visible = true;
+        this.locked = false;
+        
+        // Z-index for layering
+        this.zIndex = 1;
+        
+        // Object-specific content
+        this.content = '';
+    }
+    
+    generateId() {
+        return 'obj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Position methods
+    setPosition(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    move(deltaX, deltaY) {
+        this.x += deltaX;
+        this.y += deltaY;
+    }
+    
+    // Size methods
+    setSize(width, height) {
+        this.width = width;
+        this.height = height;
+    }
+    
+    resize(deltaWidth, deltaHeight) {
+        this.width += deltaWidth;
+        this.height += deltaHeight;
+        
+        // Minimum size constraints
+        this.width = Math.max(10, this.width);
+        this.height = Math.max(10, this.height);
+    }
+    
+    // Border methods (applies to whole object)
+    setBorder(style, size, color, set = 'all') {
+        this.border.style = style;
+        this.border.size = size;
+        this.border.color = color;
+        this.border.set = set;
+    }
+    
+    getBorderCSS() {
+        if (this.border.style === 'none') return 'border: none;';
+        
+        const borderValue = `${this.border.size}px ${this.border.style} ${this.border.color}`;
+        
+        switch(this.border.set) {
+            case 'all':
+                return `border: ${borderValue};`;
+            case 'none':
+                return 'border: none;';
+            case 'top':
+                return `border-top: ${borderValue}; border-left: none; border-right: none; border-bottom: none;`;
+            case 'bottom':
+                return `border-bottom: ${borderValue}; border-left: none; border-right: none; border-top: none;`;
+            case 'left':
+                return `border-left: ${borderValue}; border-top: none; border-right: none; border-bottom: none;`;
+            case 'right':
+                return `border-right: ${borderValue}; border-left: none; border-top: none; border-bottom: none;`;
+            default:
+                return `border: ${borderValue};`;
+        }
+    }
+    
+    // Selection methods
+    select() {
+        this.selected = true;
+    }
+    
+    deselect() {
+        this.selected = false;
+    }
+    
+    // Content methods
+    setContent(content) {
+        this.content = content;
+    }
+    
+    getContent() {
+        return this.content;
+    }
+    
+    // Bounds checking
+    isPointInside(x, y) {
+        return x >= this.x && x <= this.x + this.width && 
+               y >= this.y && y <= this.y + this.height;
+    }
+    
+    getBounds() {
+        return {
+            left: this.x,
+            top: this.y,
+            right: this.x + this.width,
+            bottom: this.y + this.height,
+            width: this.width,
+            height: this.height
+        };
+    }
+    
+    // Export object data
+    toJSON() {
+        return {
+            object_id: this.object_id,
+            object_type_id: this.object_type_id,
+            x: this.x,
+            y: this.y,
+            width: this.width,
+            height: this.height,
+            rotation: this.rotation,
+            border: { ...this.border },
+            selected: this.selected,
+            visible: this.visible,
+            locked: this.locked,
+            zIndex: this.zIndex,
+            content: this.content
+        };
+    }
+}
