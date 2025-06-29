@@ -8,21 +8,13 @@
         <link rel="stylesheet" href="TableStyles.css">
         <title>Report Designer</title>
         <!-- Styles are embedded for a single file solution -->
-    
+
     </head>
 
     <body>
         <div class="app-container">
             <!-- Toolbars -->
             <div class="toolbar toolbar-page">
-
-            <div class="toolbar-group">
-    <button  id="clearPageBtn">Clear Page</button>
-        <button id="toggleHeaderBtn" class="toggle-btn"><span>Header</span></button>
-     <button id="toggleFooterBtn" class="toggle-btn"><span>Footer</span></button>
-</div>
-
-
                 <div class="toolbar-group">
                     <label>Page Size:</label>
                     <select id="pageSize">
@@ -146,10 +138,9 @@
                     </select>
                 </div>
                 <div class="toolbar-group">
-                     <label>Format:</label><input type="text" id="formatInput" style="width: 70px;">
-                        <label>Padding:</label> <input  style="width: 50px;" type="number" id="padding" min="0" max="20" value="2" step="0.1">px
+                        <label>Padding:</label> <input type="number" id="padding" min="0" max="20" value="2" step="0.1">px
                 </div>
-                <div style="display: none;" class="toolbar-group">
+                <div style="display: block;" class="toolbar-group">
                     <input type="file" id="importFile" accept=".xml,.rdlc" style="display: none;">
                     <button id="importXmlBtn">Import XML</button>
                     <button id="exportXmlBtn">Export XML</button>
@@ -169,26 +160,11 @@
                         <div class="tool-item" data-tool="table"><span class="tool-icon">📊</span><span>Table</span></div>
                         <div class="tool-item" data-tool="line"><span class="tool-icon">📏</span><span>Line</span></div>
                     </div>
-<!-- 
-                    <div class="toolbox-section">
-        <input type="text" id="toolboxFilter" onkeyup="filterToolbox()" placeholder="Search fields...">
-    </div>
 
-                    <h3>Parameters</h3> -->
-
-                    <div style="display: flex; align-items: center; gap: 10px; font-size: 16px;
-            color:rgb(43, 44, 46);
-            margin-bottom: 5px;
-            border-bottom: 2px solid rgb(0, 109, 225);
-              font-weight: 700;
-            padding-bottom: 5px;">
-                    <span  >Parameters</span>
-                <input style="width: 100%;" type="text" id="toolboxFilter" onkeyup="filterToolbox()" placeholder="Search fields...">
-                    </div>
-
-
+                    <h3>Parameters</h3>
                     <div id="parameters-section" class="toolbox-section">
                     </div>
+
                     <div id="datasets-section" class="toolbox-section">
                     </div>
 
@@ -197,11 +173,6 @@
                     <div class="paper-container">
                         <div id="paper" class="paper a4">
                             <div class="grid-overlay" id="gridOverlay"></div>
-                            <!-- NEW: Header and Footer Guide Lines -->
-                            <div id="header-line" class="section-line"></div>
-                            <div id="footer-line" class="section-line"></div>
-                            <!-- Report objects will be added here by the script -->
-                            
                         </div>
                     </div>
                 </div>
@@ -276,7 +247,6 @@
                     this.padding = 2; // Default padding for objects like textbox
                     this.verticalAlign = 'top'; // Default vertical align for content within the object
                     this.zIndex = 0; // <-- ADD THIS LINE
-                     this.section = 'body';
                 }
 
                 createElement() {
@@ -511,7 +481,7 @@
                 constructor(x, y, width = 150, height = 40, text = 'Text Box') {
                     super('textbox', x, y, width, height);
                     this.text = text; // Stores the HTML content
-                    this.format = ''; // <<< ADD THIS LINE
+
                 this.borderStyle = 'none';
                 this.borderSize = 0;
                 this.borderSet = 'none';
@@ -787,11 +757,6 @@
 
                     super.applyStyles(styles); // Applies general styles, and calls this.updateVerticalAlignmentStyling if verticalAlign changes
 
-                      if (styles.format !== undefined) {
-                            this.format = styles.format;
-                        }
-
-
                     if (this.contentElement) {
                         if (styles.fontFamily !== undefined) this.contentElement.style.fontFamily = this.fontFamily;
                         if (styles.fontSize !== undefined && styles.fontSize !== oldFontSize) {
@@ -860,18 +825,6 @@
                     this.isTableResizing = false;
                     this.resizingTable = null;
 
-
-                        // NEW: Header/Footer properties
-                        this.headerLine = document.getElementById('header-line');
-                        this.footerLine = document.getElementById('footer-line');
-                        this.headerVisible = false;
-                        this.footerVisible = false;
-                        this.headerHeight = 96; // 1 inch default (96px @ 96 DPI)
-                        this.footerHeight = 96; // 1 inch default
-                        this.isDraggingHeader = false;
-                        this.isDraggingFooter = false;
-                        
-                        
                     this.init();
                 }
 
@@ -921,20 +874,6 @@
 
 
                 setupEventListeners() {
-
-
-
-                        // NEW: Header/Footer drag listeners
-                        this.headerLine.addEventListener('mousedown', (e) => {
-                            e.stopPropagation();
-                            this.isDraggingHeader = true;
-                        });
-
-                        this.footerLine.addEventListener('mousedown', (e) => {
-                            e.stopPropagation();
-                            this.isDraggingFooter = true;
-                        });
-
                     // Clicking on the paper itself
                     this.paper.addEventListener('mousedown', (e) => {
                         if (e.target === this.paper || e.target === this.gridOverlay) { // Click on paper or grid
@@ -952,7 +891,6 @@
                         if (this.isDragging) this.handleDrag(e);
                         if (this.isResizing) this.handleResize(e);
                         if (this.isTableResizing) this.resizingTable.handleInternalResize(e); // ADD THIS LINE
-                        if (this.isDraggingHeader || this.isDraggingFooter) this.handleHeaderFooterDrag(e); 
                     });
 
                     // Global mouse up to stop dragging/resizing
@@ -980,9 +918,6 @@
                         this.isDragging = false;
                         this.isResizing = false;
 
-                         this.isDraggingHeader = false;
-                        this.isDraggingFooter = false;
-                        
                         // Reset cursor on the selected object's element after drag/resize
                         if (this.selectedObject && this.selectedObject.element) {
                             this.selectedObject.element.style.cursor = 'move'; // Default for frame
@@ -1076,12 +1011,6 @@
                 setupToolbar() {
                     document.getElementById('pageSize').addEventListener('change', (e) => this.changePageSize(e.target.value));
                     document.getElementById('toggleGrid').addEventListener('click', () => this.toggleGrid());
-                document.getElementById('clearPageBtn').addEventListener('click', () => this.clearPage());
-     document.getElementById('formatInput').addEventListener('input', () => this.applySelectedObjectStylesFromToolbar());
-
-                document.getElementById('toggleHeaderBtn').addEventListener('click', () => this.toggleHeader());
-document.getElementById('toggleFooterBtn').addEventListener('click', () => this.toggleFooter());
-
 
                     // Generic handler for most toolbar controls that apply to the selected object's properties
                     ['borderStyle', 'borderSize', 'borderColor', 'borderSet', 'backColor', 'padding', 'textDirection', 'lineHeight'].forEach(id => {
@@ -1096,11 +1025,9 @@ document.getElementById('toggleFooterBtn').addEventListener('click', () => this.
                     });
 
 
-                   // const formattingControls = document.querySelectorAll('.format-btn'); //, .align-btn, .valign-btn, #fontFamily, #fontSizeSelect, #foreColor, #backColor
-const formattingControls = document.querySelectorAll('.format-btn, .align-btn, .valign-btn, #fontFamily, #fontSizeSelect, #foreColor, #backColor');
-                    
+                    const formattingControls = document.querySelectorAll('.format-btn'); //, .align-btn, .valign-btn, #fontFamily, #fontSizeSelect, #foreColor, #backColor
 
-                    formattingControls.forEach(control => {0
+                    formattingControls.forEach(control => {
                         control.addEventListener('mousedown', (e) => {
                             e.preventDefault();
                         });
@@ -1151,29 +1078,6 @@ const formattingControls = document.querySelectorAll('.format-btn, .align-btn, .
                     }
                 }
 
-                clearPage() {
-                    // 1. Ask the user for confirmation before deleting everything.
-                    if (confirm('Are you sure you want to clear the page? This cannot be undone.')) {
-                        
-                        // 2. Loop through all report objects as long as there are any left.
-                        while (this.objects.length > 0) {
-                            // 3. Delete the first object in the array. This removes it from the
-                            //    canvas and the 'this.objects' list. The loop continues
-                            //    until the list is empty.
-                            this.deleteObject(this.objects[0]);
-                        }
-                        
-                        // 4. If the header is currently visible, hide it.
-                        if(this.headerVisible) {
-                            this.toggleHeader(false);
-                        }
-                        
-                        // 5. If the footer is currently visible, hide it.
-                        if(this.footerVisible) {
-                            this.toggleFooter(false);
-                        }
-                    }
-                }
 
                 applySelectedObjectStylesFromToolbar() {
                     if (!this.selectedObject) return;
@@ -1193,11 +1097,6 @@ const formattingControls = document.querySelectorAll('.format-btn, .align-btn, .
                         // or directly in updateToolbarForSelectedObject when an object is selected.
                         // This function primarily applies structural/box-model styles from the toolbar.
                     }
-
-                     if (this.selectedObject.type === 'textbox') {
-                            styles.format = document.getElementById('formatInput').value;
-                        }
-                        
                     this.selectedObject.applyStyles(styles);
                     this.updateToolbarForSelectedObject(); // Refresh toolbar to reflect changes accurately
                 }
@@ -1440,74 +1339,6 @@ const formattingControls = document.querySelectorAll('.format-btn, .align-btn, .
                     document.body.classList.add('dragging-active'); // To show grabbing cursor
                 }
 
-                handleHeaderFooterDrag(e) {
-    const paperRect = this.paper.getBoundingClientRect();
-    const mouseY = e.clientY - paperRect.top;
-
-    if (this.isDraggingHeader) {
-        // Constrain the drag area
-        this.headerHeight = Math.max(20, Math.min(mouseY, this.paper.offsetHeight - this.footerHeight - 20));
-        this.headerLine.style.top = this.headerHeight + 'px';
-    } else if (this.isDraggingFooter) {
-        // Calculate footer height from the bottom edge of the paper
-        const newTop = Math.max(this.headerHeight + 20, Math.min(mouseY, this.paper.offsetHeight - 20));
-        this.footerHeight = this.paper.offsetHeight - newTop;
-        this.footerLine.style.top = newTop + 'px';
-    }
-    this.updateObjectSections(); // Re-classify objects after resizing
-}
-
-
-toggleHeader(forceState) {
-    // If forceState (true/false) is provided, use it. Otherwise, flip the current state.
-    this.headerVisible = forceState !== undefined ? forceState : !this.headerVisible;
-    
-    this.headerLine.style.display = this.headerVisible ? 'block' : 'none';
-    document.getElementById('toggleHeaderBtn').classList.toggle('active', this.headerVisible);
-    
-    if (this.headerVisible) {
-         this.headerLine.style.top = this.headerHeight + 'px';
-    }
-    this.updateObjectSections();
-}
-
-toggleFooter(forceState) {
-    this.footerVisible = forceState !== undefined ? forceState : !this.footerVisible;
-    
-    this.footerLine.style.display = this.footerVisible ? 'block' : 'none';
-    document.getElementById('toggleFooterBtn').classList.toggle('active', this.footerVisible);
-    
-    if (this.footerVisible) {
-        const footerTop = this.paper.offsetHeight - this.footerHeight;
-        this.footerLine.style.top = footerTop + 'px';
-    }
-    this.updateObjectSections();
-}
-
-
-
-updateObjectSections() {
-    const footerTop = this.paper.offsetHeight - this.footerHeight;
-    this.objects.forEach(obj => {
-        let section = 'body'; // Default to body
-        
-        // Check if the object's top edge is within the visible header area
-        if (this.headerVisible && obj.y < this.headerHeight) {
-            section = 'header';
-        } 
-        // Check if the object's bottom edge is within the visible footer area
-        else if (this.footerVisible && (obj.y + obj.height) > footerTop) {
-            section = 'footer';
-        }
-        
-        obj.section = section;
-        
-        // Optional: Add a visual indicator for testing
-        // obj.element.style.outlineColor = section === 'header' ? 'blue' : (section === 'footer' ? 'green' : '#409eff');
-    });
-}
-
-
                 handleResize(e) {
                     if (!this.isResizing || !this.selectedObject) return;
                     const dx = e.clientX - this.initialMousePos.x; // Change in X
@@ -1557,7 +1388,7 @@ updateObjectSections() {
 
                     // Snap to grid during resize, if enabled
                     if (this.gridVisible) {
-                        const gridSize = 10;
+                        const gridSize = 20;
                         // Adjust size to snap to grid
                         newWidth = Math.round(newWidth / gridSize) * gridSize;
                         newHeight = Math.round(newHeight / gridSize) * gridSize;
@@ -1865,15 +1696,6 @@ updateObjectSections() {
                         document.getElementById('borderColor').value = this.selectedObject.borderColor || '#000000';
                         document.getElementById('borderSet').value = this.selectedObject.borderSet || 'all';
                         document.getElementById('padding').value = this.selectedObject.padding !== undefined ? this.selectedObject.padding : 2;
-
-
-                         if (this.selectedObject.type === 'textbox') {
-            formatInput.value = this.selectedObject.format || '';
-            formatInput.disabled = false;
-        } else {
-            formatInput.value = '';
-            formatInput.disabled = true;
-        }
 
                         // Background color: Special handling for lines (should be disabled/transparent)
                         const backColorEl = document.getElementById('backColor');

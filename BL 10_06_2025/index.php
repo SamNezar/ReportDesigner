@@ -146,8 +146,7 @@
                     </select>
                 </div>
                 <div class="toolbar-group">
-                     <label>Format:</label><input type="text" id="formatInput" style="width: 70px;">
-                        <label>Padding:</label> <input  style="width: 50px;" type="number" id="padding" min="0" max="20" value="2" step="0.1">px
+                        <label>Padding:</label> <input type="number" id="padding" min="0" max="20" value="2" step="0.1">px
                 </div>
                 <div style="display: none;" class="toolbar-group">
                     <input type="file" id="importFile" accept=".xml,.rdlc" style="display: none;">
@@ -511,7 +510,7 @@
                 constructor(x, y, width = 150, height = 40, text = 'Text Box') {
                     super('textbox', x, y, width, height);
                     this.text = text; // Stores the HTML content
-                    this.format = ''; // <<< ADD THIS LINE
+
                 this.borderStyle = 'none';
                 this.borderSize = 0;
                 this.borderSet = 'none';
@@ -786,11 +785,6 @@
                     const oldVerticalAlign = this.verticalAlign; // Store to see if it changed
 
                     super.applyStyles(styles); // Applies general styles, and calls this.updateVerticalAlignmentStyling if verticalAlign changes
-
-                      if (styles.format !== undefined) {
-                            this.format = styles.format;
-                        }
-
 
                     if (this.contentElement) {
                         if (styles.fontFamily !== undefined) this.contentElement.style.fontFamily = this.fontFamily;
@@ -1077,8 +1071,7 @@
                     document.getElementById('pageSize').addEventListener('change', (e) => this.changePageSize(e.target.value));
                     document.getElementById('toggleGrid').addEventListener('click', () => this.toggleGrid());
                 document.getElementById('clearPageBtn').addEventListener('click', () => this.clearPage());
-     document.getElementById('formatInput').addEventListener('input', () => this.applySelectedObjectStylesFromToolbar());
-
+   
                 document.getElementById('toggleHeaderBtn').addEventListener('click', () => this.toggleHeader());
 document.getElementById('toggleFooterBtn').addEventListener('click', () => this.toggleFooter());
 
@@ -1193,11 +1186,6 @@ const formattingControls = document.querySelectorAll('.format-btn, .align-btn, .
                         // or directly in updateToolbarForSelectedObject when an object is selected.
                         // This function primarily applies structural/box-model styles from the toolbar.
                     }
-
-                     if (this.selectedObject.type === 'textbox') {
-                            styles.format = document.getElementById('formatInput').value;
-                        }
-                        
                     this.selectedObject.applyStyles(styles);
                     this.updateToolbarForSelectedObject(); // Refresh toolbar to reflect changes accurately
                 }
@@ -1865,15 +1853,6 @@ updateObjectSections() {
                         document.getElementById('borderColor').value = this.selectedObject.borderColor || '#000000';
                         document.getElementById('borderSet').value = this.selectedObject.borderSet || 'all';
                         document.getElementById('padding').value = this.selectedObject.padding !== undefined ? this.selectedObject.padding : 2;
-
-
-                         if (this.selectedObject.type === 'textbox') {
-            formatInput.value = this.selectedObject.format || '';
-            formatInput.disabled = false;
-        } else {
-            formatInput.value = '';
-            formatInput.disabled = true;
-        }
 
                         // Background color: Special handling for lines (should be disabled/transparent)
                         const backColorEl = document.getElementById('backColor');

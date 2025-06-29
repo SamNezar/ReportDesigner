@@ -1,0 +1,131 @@
+/* =============================================================== */
+/* Styles for the Report Designer Table                          */
+/* =============================================================== */
+
+.table-object-container { 
+    cursor: default; 
+    overflow: visible !important;
+}
+
+.table-object {
+    width: 100%; 
+    height: 100%; 
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+}
+
+.table-object th, .table-object td {
+    padding: 0; 
+    text-align: left;
+    position: relative; 
+    vertical-align: top;
+}
+
+.table-controls-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* FIX: This was incorrectly set to none before. It should be hidden by default... */
+    display: none; 
+}
+
+/* FIX: ...and this rule correctly makes it visible ONLY when the table is selected. */
+.report-object.selected .table-controls-container {
+    display: block;
+}
+
+/* Gray tabs for selecting a whole row or column */
+.table-col-control, .table-row-control {
+    position: absolute;
+    background-color: #f1f3f5;
+    border: 1px solid #ced4da;
+    font-size: 11px;
+    font-weight: bold;
+    color: #495057;
+    border-radius: 3px;
+    z-index: 10002;
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.1s;
+    box-sizing: border-box;
+}
+.table-col-control:hover, .table-row-control:hover {
+    background-color: #e9ecef;
+}
+
+.table-col-control.highlight, .table-row-control.highlight {
+    background-color: #cce5ff;
+    border-color: #007bff;
+    color: #004085;
+}
+
+.table-col-control {
+    height: 20px;
+    top: -21px; 
+}
+
+.table-row-control {
+    width: 20px;
+    left: -21px; 
+}
+
+/* Corner grip for moving the entire table */
+.table-move-grip {
+    position: absolute;
+    top: -21px;
+    left: -21px;
+    width: 20px;
+    height: 20px;
+    background-color: #e9ecef;
+    background-image: 
+        linear-gradient(45deg, #adb5bd 25%, transparent 25%), 
+        linear-gradient(-45deg, #adb5bd 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #adb5bd 75%), 
+        linear-gradient(-45deg, transparent 75%, #adb5bd 75%);
+    background-size: 8px 8px;
+    background-position: 0 0;
+    border: 1px solid #ced4da;
+    border-radius: 3px;
+    cursor: move;
+    z-index: 10003;
+    pointer-events: all;
+}
+.table-move-grip:hover {
+    background-color: #dee2e6;
+}
+
+/* Grips for resizing rows/columns */
+.table-resize-grip {
+    position: absolute;
+    background: #007bff;
+    z-index: 10003;
+    pointer-events: all;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+.table-resize-grip:hover {
+    opacity: 1;
+}
+
+.table-resize-grip-col {
+    width: 7px;
+    height: 20px;
+    top: -21px;
+    transform: translateX(-50%);
+    cursor: col-resize;
+}
+
+.table-resize-grip-row {
+    height: 7px;
+    width: 20px;
+    left: -21px;
+    transform: translateY(-50%);
+    cursor: row-resize;
+}
